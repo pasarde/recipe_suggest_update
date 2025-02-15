@@ -6,8 +6,8 @@ This is the ML component of the Recipe Suggestion App. It uses TF-IDF to recomme
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/desxtra/recipeRecommendations.git
-   cd recipeRecommendations
+   git clone https://github.com/desxtra/recipe_suggestions.git
+   cd recipe_suggestions
    ```
 
 2. Install dependencies:
@@ -16,16 +16,10 @@ This is the ML component of the Recipe Suggestion App. It uses TF-IDF to recomme
     ```
 
 3. Add your Spoonacular API key to a .env file:
-    ```bash
-    SPOONACULAR_KEY="YOUR_SPOONACULAR_API_KEY"
-    ```
 
-4. Run the pipeline:
-    - Fetch data: python src/data_fetching.py
-    - Clean data: python src/preprocess.py
-    - Train model: python src/train_model.py
+    - SPOONACULAR_KEY="YOUR_SPOONACULAR_API_KEY"
 
-5. Test recommendations:
+4. Run the App:
     ```bash
-    python tests/test_recommend.py
+    python app.py
     ```
