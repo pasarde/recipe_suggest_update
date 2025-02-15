@@ -1,6 +1,6 @@
 # Recipe Suggestion App
 
-This is the ML component of the Recipe Suggestion App. It uses TF-IDF to recommend recipes based on user-provided ingredients.
+This is the ML component of the Recipe Suggestion App. It uses spoonacular api to recommend recipes based on user-provided ingredients.
 
 ## Setup
 
