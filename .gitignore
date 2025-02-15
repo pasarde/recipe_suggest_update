@@ -1,0 +1,16 @@
+# Ignore data and models
+data/
+models/
+
+# Ignore environment files
+.env
+
+# Ignore Python cache and virtual environments
+__pycache__/
+*.pyc
+venv/
+env/
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
