@@ -38,7 +38,7 @@
                 <h2>${recipe.title}</h2>
                 <p><strong>Ready in Minutes:</strong> ${recipe.readyInMinutes || "N/A"}</p>
                 <p><strong>Servings:</strong> ${recipe.servings || "N/A"}</p>
-                <p><a href="${recipe.sourceUrl}" target="_blank">View Recipe</a></p>
+                <p><a href="/recipe/${recipe.id}">View Recipe</a></p>
                 <img src="${recipe.image}" alt="${recipe.title}" width="200">
                 <p>${recipe.summary}</p>
               `;

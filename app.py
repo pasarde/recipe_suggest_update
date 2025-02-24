@@ -27,6 +27,19 @@ def suggest_recipes_by_ingredients(ingredients, number=5):
     data = response.json()
     return data.get("results", [])
 
+def get_recipe_by_id(recipe_id):
+    """
+    Get detailed recipe information by ID
+    """
+    url = f"https://api.spoonacular.com/recipes/{recipe_id}/information"
+    params = {
+        "apiKey": API_KEY
+    }
+    response = requests.get(url, params=params)
+    if response.status_code != 200:
+        return None
+    return response.json()
+
 @app.route("/api/suggest", methods=["GET"])
 def suggest():
     """
@@ -38,6 +51,16 @@ def suggest():
         return jsonify({"error": "No ingredients provided."}), 400
     recipes = suggest_recipes_by_ingredients(ingredients)
     return jsonify(recipes)
+
+@app.route("/recipe/<int:recipe_id>")
+def recipe(recipe_id):
+    """
+    Display detailed recipe information
+    """
+    recipe_data = get_recipe_by_id(recipe_id)
+    if recipe_data is None:
+        return "Recipe not found", 404
+    return render_template("recipe.html", recipe=recipe_data)
 
 @app.route("/")
 def index():
