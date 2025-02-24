@@ -30,6 +30,21 @@
             text-decoration: none;
             border-radius: 5px;
         }
+        .action-buttons {
+            margin: 20px 0;
+        }
+        .action-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .action-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +55,19 @@
     <div class="recipe-info">
         <p><strong>Ready in:</strong> {{ recipe.readyInMinutes }} minutes</p>
         <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+    </div>
+
+    <div class="action-buttons">
+        <form action="/favorite/{{ recipe.id }}" method="post" style="display: inline;">
+            <button type="submit" class="action-button">
+                <span>❤️ Add to Favorites</span>
+            </button>
+        </form>
+        <form action="/like/{{ recipe.id }}" method="post" style="display: inline;">
+            <button type="submit" class="action-button">
+                <span>👍 Like</span>
+            </button>
+        </form>
     </div>
 
     <h2>Ingredients</h2>

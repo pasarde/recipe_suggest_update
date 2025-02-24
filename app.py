@@ -1,13 +1,21 @@
 import os
 import requests
-from flask import Flask, request, jsonify, render_template
+import sqlite3
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from dotenv import load_dotenv
+from database import init_db
 
 # Load your Spoonacular API key from the .env file
 load_dotenv()
 API_KEY = os.getenv("SPOONACULAR_KEY")
 
 app = Flask(__name__)
+init_db()
+
+def get_db():
+    conn = sqlite3.connect('recipes.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def suggest_recipes_by_ingredients(ingredients, number=5):
     """
@@ -25,7 +33,18 @@ def suggest_recipes_by_ingredients(ingredients, number=5):
         print("Error fetching recipes:", response.status_code, response.text)
         return []
     data = response.json()
-    return data.get("results", [])
+    recipes = data.get("results", [])
+    
+    # Get liked recipes and put them first
+    db = get_db()
+    liked = db.execute("SELECT recipe_id FROM likes").fetchall()
+    liked_ids = [r['recipe_id'] for r in liked]
+    
+    # Reorder recipes to put liked ones first
+    recipes.sort(key=lambda x: x['id'] in liked_ids, reverse=True)
+    
+    db.close()
+    return recipes
 
 def get_recipe_by_id(recipe_id):
     """
@@ -61,6 +80,39 @@ def recipe(recipe_id):
     if recipe_data is None:
         return "Recipe not found", 404
     return render_template("recipe.html", recipe=recipe_data)
+
+@app.route("/favorite/<int:recipe_id>", methods=["POST"])
+def add_favorite(recipe_id):
+    recipe_data = get_recipe_by_id(recipe_id)
+    if recipe_data:
+        db = get_db()
+        db.execute(
+            "INSERT OR REPLACE INTO favorites (recipe_id, title, image, ready_in_minutes, servings) VALUES (?, ?, ?, ?, ?)",
+            (recipe_id, recipe_data['title'], recipe_data['image'], recipe_data['readyInMinutes'], recipe_data['servings'])
+        )
+        db.commit()
+        db.close()
+    return redirect(url_for('recipe', recipe_id=recipe_id))
+
+@app.route("/like/<int:recipe_id>", methods=["POST"])
+def like_recipe(recipe_id):
+    recipe_data = get_recipe_by_id(recipe_id)
+    if recipe_data:
+        db = get_db()
+        db.execute(
+            "INSERT OR REPLACE INTO likes (recipe_id, title) VALUES (?, ?)",
+            (recipe_id, recipe_data['title'])
+        )
+        db.commit()
+        db.close()
+    return redirect(url_for('recipe', recipe_id=recipe_id))
+
+@app.route("/favorites")
+def favorites():
+    db = get_db()
+    favorites = db.execute("SELECT * FROM favorites").fetchall()
+    db.close()
+    return render_template("favorite.html", recipes=favorites)
 
 @app.route("/")
 def index():
