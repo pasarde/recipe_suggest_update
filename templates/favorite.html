@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,4 +51,58 @@
         <p>No favorite recipes yet.</p>
     {% endif %}
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Recipes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .recipe-card {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .recipe-image {
+            max-width: 100%;
+            height: auto;
+        }
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-button">Back to Search</a>
+    <h1>My Favorite Recipes</h1>
+    
+    {% if recipes %}
+        {% for recipe in recipes %}
+        <div class="recipe-card">
+            <h2>{{ recipe.title }}</h2>
+            <img src="{{ recipe.image }}" alt="{{ recipe.title }}" class="recipe-image">
+            <p><strong>Ready in:</strong> {{ recipe.ready_in_minutes }} minutes</p>
+            <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+            <a href="/recipe/{{ recipe.recipe_id }}" class="back-button">View Recipe</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No favorite recipes yet.</p>
+    {% endif %}
+</body>
+>>>>>>> 9c7f9b4f899f30276a81df47a089dbcf9bf44669
 </html>

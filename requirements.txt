@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 requests==2.31.0
 python-dotenv==1.0.0
+=======
+requests==2.31.0
+python-dotenv==1.0.0
+>>>>>>> 9c7f9b4f899f30276a81df47a089dbcf9bf44669
 flask==3.1.0
