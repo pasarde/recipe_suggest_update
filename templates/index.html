@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipe Suggestions</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .recipe { border: 1px solid #ddd; padding: 10px; margin: 10px; }
+    img { display: block; margin-bottom: 10px; }
+    .nav-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .nav-button:hover {
+        background-color: #45a049;
+    }
+    .weather-recommendations {
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    .weather-info {
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+    .weather-recipes {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+    .weather-recipe-card {
+      min-width: 250px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      background: white;
+    }
+    .weather-recipe-card img {
+      width: 100%;
+      border-radius: 5px;
+    }
+    .city-form {
+      margin: 20px 0;
+    }
+    .city-form input {
+      padding: 8px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 250px;
+    }
+    .city-form button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .city-form button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Find a Recipe Based on Your Ingredients</h1>
+  <div class="nav-buttons">
+    <a href="/favorites" class="nav-button">My Favorites</a>
+  </div>
+
+  <form action="/" method="get" class="city-form">
+    <input type="text" name="city" placeholder="Masukkan nama kota (default: Jakarta)" value="{{ request.args.get('city', '') }}">
+    <button type="submit">Cari</button>
+  </form>
+
+  {% if weather_data %}
+  <div class="weather-recommendations">
+    <div class="weather-info">
+      <p>🌡️ Suhu saat ini di {{ weather_data.weather.city }}: {{ weather_data.weather.temp }}°C</p>
+      <p>{{ weather_data.message }}</p>
+    </div>
+    {% if weather_data.recipes %}
+    <div class="weather-recipes">
+      {% for recipe in weather_data.recipes %}
+      <div class="weather-recipe-card">
+        <h3>{{ recipe.title }}</h3>
+        {% if recipe.image %}
+        <img src="{{ recipe.image }}" alt="{{ recipe.title }}">
+        {% endif %}
+        <p><strong>Ready in:</strong> {{ recipe.readyInMinutes }} minutes</p>
+        <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+        <p><a href="/recipe/{{ recipe.id }}" class="recipe-link">View Recipe</a></p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No recipes found. Please try again later or search with ingredients below.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <form id="ingredientForm">
+    <input type="text" id="ingredients" placeholder="Enter ingredients (e.g., tomato,basil)" required>
+    <button type="submit">Search</button>
+  </form>
+  <div id="results"></div>
+  
+  <script>
+    document.getElementById("ingredientForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var ingredients = document.getElementById("ingredients").value;
+      fetch("/api/suggest?ingredients=" + encodeURIComponent(ingredients))
+        .then(response => response.json())
+        .then(data => {
+          var resultsDiv = document.getElementById("results");
+          resultsDiv.innerHTML = "";
+          if (data.error) {
+            resultsDiv.innerHTML = "<p>Error: " + data.error + "</p>";
+          } else if (data.length === 0) {
+            resultsDiv.innerHTML = "<p>No recipes found.</p>";
+          } else {
+            data.forEach(function(recipe) {
+              var recipeDiv = document.createElement("div");
+              recipeDiv.className = "recipe";
+              recipeDiv.innerHTML = `
+                <h2>${recipe.title}</h2>
+                <p><strong>Ready in Minutes:</strong> ${recipe.readyInMinutes || "N/A"}</p>
+                <p><strong>Servings:</strong> ${recipe.servings || "N/A"}</p>
+                <p><a href="/recipe/${recipe.id}">View Recipe</a></p>
+                <img src="${recipe.image}" alt="${recipe.title}" width="200">
+                <p>${recipe.summary}</p>
+              `;
+              resultsDiv.appendChild(recipeDiv);
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching recipes:", error);
+        });
+    });
+  </script>
+</body>
+</html>
